@@ -12,16 +12,31 @@ const schema = buildSchema(`
   type Query {
     todos: [Todo]
   }
+
+  input TodoInput {
+    title: String!
+  }
+
+  type Mutation {
+    addTodo(input: TodoInput): Todo
+  }
 `);
 
-let fakeDatabase = [
-  { id: '1', title: 'sample 1' },
-  { id: '2', title: 'sample 2' }
-];
+let fakeDatabase = [];
 
 const root = {
-  todos: () => fakeDatabase
+  todos: () => fakeDatabase,
+
+  addTodo: ({input}) => {
+    const todo = {
+      id: new Date().getTime().toString(),
+      title: input.title
+    }
+    fakeDatabase.push(todo);
+    return todo;
+  }
 };
+
 
 const app = express();
 app.use(cors());
